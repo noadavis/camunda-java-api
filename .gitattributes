@@ -1,0 +1,11 @@
+src/main/resources/static/js/bootstrap.bundle.min.js linguist-vendored
+src/main/resources/static/js/sweetalert2.min.js linguist-vendored
+src/main/resources/static/js/bootstrap.bundle.min.js linguist-vendored
+src/main/resources/static/js/bpmn-viewer.production.min.js linguist-vendored
+src/main/resources/static/js/jquery.min.js linguist-vendored
+src/main/resources/static/css/font-awesome.min.css linguist-vendored
+src/main/resources/static/css/bootstrap.css linguist-vendored
+src/main/resources/static/css/sweetalert.css linguist-vendored
+src/main/resources/templates/base/main.html linguist-vendored
+src/main/resources/templates/base/login.html linguist-vendored
+src/main/resources/templates/base/register.html linguist-vendored
