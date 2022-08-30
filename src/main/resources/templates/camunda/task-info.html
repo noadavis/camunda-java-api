@@ -1,0 +1,56 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head></head>
+<body>
+    <section class="row" layout:fragment="mainContent">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <p><a class="btn btn-primary" href="/bpmn/task">Camunda task list</a></p>
+                    <pre th:text="${taskInfo}"></pre>
+                    <div style="display: none;">
+                        <span id="processId" th:text="${processId}"></span>
+                        <span id="taskId" th:text="${taskId}"></span>
+                    </div>
+                    <div class="content" id="js-drop-zone">
+                        <div id="diagramCanvas"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section layout:fragment="javaScript" th:remove="tag">
+        <link rel="stylesheet" type="text/css" href="/static/css/bpmn.css">
+        <script type="text/javascript" src="/static/js/bpmn-viewer.production.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var processId = $("#processId").text();
+                var taskId = $("#taskId").text();
+                var BpmnViewer = window.BpmnJS;
+                var viewer = new BpmnViewer({container: '#diagramCanvas', width: '100%', height: '600px'});
+                var container = $('#js-drop-zone');
+                // get the diagram
+                $.get('/bpmn/task/json/' + taskId, function(marker) {
+                  $.get('/bpmn/process/' + processId + '/json', function(data) {
+                    // show it in bpmn.io
+                    viewer.importXML(data.bpmn20Xml, function(err) {
+                      if (err) {
+                        console.log('error rendering', err);
+                      } else {
+                        var canvas = viewer.get('canvas');
+                        // zoom to fit full viewport
+                        canvas.zoom('fit-viewport');
+                        container.removeClass('with-error')
+                             .addClass('with-diagram');
+                        // add marker
+                        canvas.addMarker(marker.taskDefinitionKey, 'highlight');
+                      }
+                    });
+                  });
+                });
+            });
+        </script>
+    </section>
+</body>
+</html>

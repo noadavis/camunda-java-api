@@ -1,0 +1,160 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Arial;
+}
+.content-wrapper.container {
+    min-height: 650px;
+}
+.nav-tabs {
+    padding-bottom: 15px;
+}
+.taskTitleText {
+    height: 30px;
+    margin: 0;
+}
+.UserGroupPadding {
+    padding-left: 63px;
+}
+#taskInfoPage p {
+    margin-bottom: 2px;
+}
+.page-link {
+  padding: 3px 9px;
+}
+#taskContent .form-group {
+    margin-bottom: 5px;
+    font-size: 90%;
+}
+#monthsTable .table td {
+    padding: .45rem;
+    text-align: center;
+    color: #111111;
+}
+#monthsTable .table th {
+    background-color: #435ebe;
+    padding: .45rem;
+    text-align: center;
+    color: #ffffff;
+}
+#monthsTable .table .dayPre, #mapTable .table .dayPre, #mapTable .dayPreMap {
+    background-color: #1ea590;
+    color: #ffffff;
+}
+#monthsTable .table .dayHol, #mapTable .table .dayHol, #mapTable .dayHolMap {
+    background-color: #1e8ea4;
+    color: #ffffff;
+}
+.taskField {
+    padding: 3px;
+}
+.findUserInputs input {
+    width: 175px;
+    border: 1px solid #4b6c9e;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 5px;
+}
+.findUserInputs {
+    margin-bottom: 25px;
+}
+#componentsTable .categoryRow {
+    font-size: 110%;
+    font-weight: bold;
+    text-align: center;
+    background-color: #435ebe;
+    color: #ffffff;
+}
+#componentsTable thead {
+    background-color: #435ebe;
+    color: #ffffff;
+}
+.addComponentSelect {
+    padding: 5px 0;
+}
+td.serviceCategory {
+    text-align: center;
+    font-size: 120%;
+    font-weight: bold;
+}
+td.serviceCategory:hover {
+    color: #ffffff;
+}
+td.serviceService {
+    vertical-align: top;
+    font-weight: bold;
+}
+#catalogTable p {
+    margin: 3px;
+}
+tr.parentRow, #catalogTable th {
+    background-color: #435ebe;
+    color: #ffffff;
+}
+tr.parentRow a {
+    color: #ffffff;
+}
+span.parent:hover {
+    color: #ffffff;
+    cursor: pointer;
+}
+tr.child {
+    display: none;
+}
+.header-top-right a {
+    padding-right: 25px;
+}
+.page-heading i, .submenu-item i {
+    padding-right: 15px;
+}
+.header-top-right i {
+    padding-right: 10px;
+}
+.fa-gray {
+    color: #cccccc;
+}
+.logo a {
+    font-size: 140%;
+    font-weight: bold;
+    color: #25396f;
+}
+.auth-logo a {
+    font-size: 175%;
+    font-weight: bold;
+    color: #25396f;
+}
+.row_hidden td {
+    color: #aaaaaa;
+}
+td.name i {
+    width: 30px;
+}
+.menu-link i {
+    padding-top: 5px;
+}
+.form-check .checkbox {
+    padding: 2px 0;
+}
+.alert-dismissible .btn-show {
+    padding: 1.25rem 1rem;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+    width: 60px;
+}
+.editmenu-item {
+    padding-right: 20px;
+    width: 200px;
+    display: inline-block;
+}
+.editmenu-item i {
+    width: 20px;
+    text-align: center;
+    margin-right: 15px;
+}
+.editmenu-button {
+    width: 55px;
+    display: inline-block;
+}
+.editmenu-disabled {
+    color: #aaaaaa;
+}

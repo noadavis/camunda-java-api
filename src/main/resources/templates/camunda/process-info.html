@@ -1,0 +1,59 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <p>
+                            <a class="btn btn-primary" href="/bpmn/process">Process list</a>
+                        </p>
+                        <div style="display: none;" id="applicationUrl" th:text="${applicationUrl}"></div>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <tr><td width="30%">id</td><td th:text="${bpmn.getId()}"></td></tr>
+                                <tr><td>processId</td><td th:text="${bpmn.getProcessId()}"></td></tr>
+                                <tr><td>processKey</td><td th:text="${bpmn.getProcessKey()}"></td></tr>
+                                <tr><td>name</td><td th:text="${bpmn.getName()}"></td></tr>
+                                <tr><td>version</td><td th:text="${bpmn.getVersion()}"></td></tr>
+                                <tr><td>deploymentId</td><td th:text="${bpmn.getDeploymentId()}"></td></tr>
+                                <tr><td>resource</td><td><span th:text="${bpmn.getResource()}"></span>
+                                    <a id="bpmnLink" class="btn btn-primary btn-sm" th:href="'/bpmn/process/' + ${bpmn.getId()} +'/xml'"><i class="fa fa-file-code-o"></i> Download</a></td></tr>
+                                <tr><td>deploymentTime</td><td th:text="${bpmn.getDeploymentTime()}"></td></tr>
+                            </table>
+                        </div>
+                        <div class="canvas">
+                            <div id="js-canvas"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script type="text/javascript" src="/static/js/bpmn-viewer.production.min.js"></script>
+            <script>
+                var applicationUrl = "";
+                $(document).ready(function() {
+                    openFromUrl($("#bpmnLink").attr("href"));
+                    applicationUrl = $("#applicationUrl").html();
+                });
+                var viewer = new BpmnJS({
+                    container: $('#js-canvas'),
+                    height: 600
+                });
+                function openFromUrl(url) {
+                    $.ajax(applicationUrl + url, { dataType : 'text' }).done(async function(xml) {
+                        try {
+                            await viewer.importXML(xml);
+                            viewer.get('canvas').zoom('fit-viewport');
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            </script>
+        </section>
+    </body>
+</html>

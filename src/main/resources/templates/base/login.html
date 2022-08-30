@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${@environment.getProperty('spring.application.name')}"></title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/other.css">
+    <link rel="stylesheet" href="/static/css/auth.css">
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <style type="text/css" media="screen">
+		.outer {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			background-color: #4b6d9d;
+			font-size: 80%
+		}
+		.inner {
+			position: relative;
+			min-width: 500px;
+			min-height: 360px;
+			background-color: #ffffff;
+			box-shadow: 0px 22px 22px 22px rgba(0, 0, 0, 0.05), 0px 22px 22px 0px rgba(0, 0, 0, 0.16);
+			perspective: 800px;
+			padding: 20px;
+		}
+	</style>
+</head>
+<body>
+<div class="outer">
+    <div class="inner">
+
+        <h1 style="text-align: center;">Login</h1>
+        <form th:action="@{/auth/login}" method="POST">
+            <div class="form-group position-relative has-icon-left mb-4">
+                <input type="text" class="form-control form-control-xl" name="username" placeholder="Username">
+                <div class="form-control-icon">
+                    <i class="fa fa-user"></i>
+                </div>
+            </div>
+            <div class="form-group position-relative has-icon-left mb-4">
+                <input type="password" class="form-control form-control-xl" name="password" placeholder="Password">
+                <div class="form-control-icon">
+                    <i class="fa fa-lock"></i>
+                </div>
+            </div>
+            <p class="auth-message mb-3" th:if="${param.error}">Unknown user or bad password</p>
+            <p class="auth-message mb-3" th:if="${param.logout}">System logout</p>
+            <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-3">Login</button>
+            <a href="/auth/register" class="btn btn-primary btn-block btn-lg shadow-lg mt-3">Register</a>
+        </form>
+
+    </div>
+</div>
+</body>
+</html>

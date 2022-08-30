@@ -1,0 +1,66 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead><tr>
+                                    <th>N</th>
+                                    <th>#</th>
+                                    <th>id</th>
+                                    <th>created</th>
+                                    <th>processDefinitionId</th>
+                                    <th>processInstanceId</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr th:each="task, index: ${tasks}" th:id="${'tr_' + task.getProcessInstanceId()}">
+                                        <td th:text="${index.index}"></td>
+                                        <td><a title="Принудительно завершить процесс" class="btn btn-danger btn-sm" th:onclick="'deleteTask(\'ts_' + ${index.index} + '\'); return false;'" href="#"><i class="fa fa-trash"></i></a></td>
+                                        <td><a target="_blank" th:href="${'/bpmn/task/' + task.getId()}" th:text="${task.getId()}"></a></td>
+                                        <td th:if="${withEngine}" th:text="${#dates.format(task.getCreateTime(), 'yyyy-MM-dd HH:mm:ss.SSSZ')}"></td>
+                                        <td th:unless="${withEngine}" th:text="${task.getCreated()}"></td>
+                                        <td th:text="${task.getProcessDefinitionId()}"></td>
+                                        <td th:id="${'ts_' + index.index}" th:text="${task.getProcessInstanceId()}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <form action="#" autocomplete="off">
+                                <input type="hidden" id="_csrf" th:value="${_csrf.token}" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script>
+                function deleteTask(id) {
+                    var formData = new FormData();
+                    var procInstId = $("#"+id).html();
+                    formData.append("procInstId", procInstId);
+                    formData.append("_csrf", $("#_csrf").val());
+                    $.ajax({
+                        url : "/bpmn/api/process-delete",
+                        type : "POST",
+                        data : formData,
+                        processData: false,
+                        contentType: false,
+                        success : function(answer) {
+                            console.log(answer);
+                            if (!answer.error) {
+                                $("#tr_"+procInstId).remove();
+                            } else {
+                                if (answer.description != "") swal.fire(answer.description);
+                            }
+                        }
+                    });
+                }
+            </script>
+        </section>
+    </body>
+</html>

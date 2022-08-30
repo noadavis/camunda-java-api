@@ -1,0 +1,63 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4"><label>Process</label></div>
+                            <div class="col-md-8 form-group">
+                                <input autocomplete="off" type="file" id="bpmn" accept=".bpmn">
+                                <input type="hidden" id="csrf" name="csrf" th:value="${_csrf.token}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <hr>
+                                <div id="taskFormButtons">
+                                    <input type="hidden" id="_csrf" th:value="${_csrf.token}" />
+                                    <a class="btn btn-primary" onclick="uploadProcess();return false;" href="#"><i class="fa fa-upload"></i> Upload</a>
+                                    <a href="/bpmn/process" class="btn btn-primary"><i class="fa fa-ban"></i> Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script>
+                // $(document).ready(function() {
+                //     //
+                // });
+                function uploadProcess(action) {
+                    if ($("#bpmn")[0].files.length > 0) {
+                        var formData = new FormData();
+                        formData.append("bpmn", $("#bpmn")[0].files[0]);
+                        formData.append("_csrf", $("#csrf").val());
+                        $.ajax({
+                            url : "/bpmn/process-upload",
+                            type : "POST",
+                            data : formData,
+                            processData: false,
+                            contentType: false,
+                            success : function(answer) {
+                                if (!answer.error) {
+                                    swal.fire("Uploaded successfully");
+                                } else {
+                                    if (answer.description != "") swal.fire(answer.description);
+                                }
+                            }
+                        });
+                    } else {
+                        swal.fire("Files not selected");
+                    }
+                    return false;
+                }
+            </script>
+        </section>
+    </body>
+</html>

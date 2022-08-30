@@ -1,0 +1,100 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body" id="taskFormPage">
+                        <form autocomplete="off" class="form form-horizontal">
+                            <div class="row">
+
+
+
+                                <div th:each="field: ${fields}" th:remove="tag">
+                                    <div class="col-md-4"><label th:text="${field.getLabel()}"></label></div>
+                                    <div th:switch="${field.getType()}" th:remove="tag">
+
+                                        <div th:case="'string'" class="col-md-8 form-group">
+                                            <input type="text" th:id="${field.getId()}" th:disabled="${field.isWritable() == false}" class="form-control taskField" th:value="${field.getValue()}">
+                                        </div>
+
+                                        <div th:case="'long'" class="col-md-8 form-group">
+                                            <input type="text" th:id="${field.getId()}" th:disabled="${field.isWritable() == false}" class="form-control taskField" th:value="${field.getValue()}">
+                                        </div>
+
+                                        <div th:case="'enum'" class="col-md-8 form-group">
+                                            <select th:disabled="${field.isWritable() == false}" class="form-select taskField" th:id="${field.getId()}">
+                                                <option th:each="option: ${field.getValues()}"
+                                                        th:selected="${field.getValue() == option.getKey()}"
+                                                        th:value="${option.getKey()}"
+                                                        th:text="${option.getValue()}">
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div th:case="'dictionary'" class="col-md-8 form-group">
+                                            <select th:disabled="${field.isWritable() == false}" class="form-select taskField" th:id="${field.getId()}">
+                                                <option th:each="option: ${field.getValues()}"
+                                                        th:selected="${field.getValue() == option.getKey()}"
+                                                        th:value="${option.getKey()}"
+                                                        th:text="${option.getValue()}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <hr>
+                                    <div id="taskFormButtons">
+                                        <input type="hidden" id="_csrf" th:value="${_csrf.token}" />
+                                        <input type="hidden" id="_taskId" class="taskField" th:value="${taskId}" />
+                                        <a onclick="submitForm(); return false;" href="#" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Update user task</a>
+                                        <a href="/task" class="btn btn-primary"><i class="fa fa-ban"></i> Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script type="text/javascript" src="/static/task/task.js"></script>
+            <script>
+                //$(document).ready(function() {
+                //
+                //});
+
+                function getTaskFields() {
+                    var taskFields = {};
+                    $('.taskField').each(function() {
+                        taskFields[$(this).attr("id")] = $(this).val();
+                    });
+                    $('.taskCheck').each(function() {
+                        taskFields[$(this).attr("id")] = $(this).is(':checked');
+                    });
+                    return taskFields;
+                }
+                async function submitForm() {
+                    var formData = getTaskFields();
+                    var answer = await ajaxJsonWrapper("/task/update", formData, $("#_csrf").val());
+                    if (answer) {
+                        if (!answer.error) {
+                            swal.fire("User task updated");
+                        } else {
+                            if (answer.description != "") swal.fire(answer.description);
+                        }
+                    }
+                    return false;
+                }
+            </script>
+        </section>
+    </body>
+</html>

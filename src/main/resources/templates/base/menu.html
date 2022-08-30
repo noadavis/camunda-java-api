@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" th:remove="tag">
+    <ul style="padding-left: 10px;" th:fragment="menu_static">
+        <li class="menu-item"><a href="/task" class="menu-link"><i class="fa fa-file-text"></i> <span>User task list</span></a></li>
+        <li class="menu-item"><a href="#" class='menu-link'><i class="fa fa-server"></i> <span>Camunda</span></a>
+            <div class="submenu">
+                <div class="submenu-group-wrapper">
+                    <ul class="submenu-group">
+                        <li class="submenu-item">
+                            <a href="/bpmn/task" class='submenu-link'><i class="fa fa-tasks"></i> Camunda task list</a>
+                            <a href="/bpmn/process" class='submenu-link'><i class="fa fa-server"></i> Loaded processes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    </ul>
+</html>

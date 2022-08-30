@@ -1,0 +1,122 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <form autocomplete="off"  th:action="'/task/new'" method="post">
+                                    <p><button type="submit" class="btn btn-primary"><i class="fa fa-plus-square"></i> Create user task</button>
+                                        <select autocomplete="off" onchange="loadTaskList(0)" class="form-select" id="processKey" name="processKey" style="width: 250px; display: inline;">
+                                            <option selected="" th:value="'0'">Default</option>
+                                            <option th:each="proc: ${processList}" th:value="${proc.getId()}" th:text="${proc.getName()}"></option>
+                                        </select>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <nav style="padding-top: 15px;">
+                            <ul class="pagination pagination-primary justify-content-center" id="groupListPagination"></ul>
+                        </nav>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-task" id="taskTableList">
+                                <thead><tr>
+                                    <th style="width: 99px;"><select autocomplete="off" onchange="loadTaskList(0)" class="form-select" id="count" name="count">
+                                        <option selected="" value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                    </select></th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th><select autocomplete="off" onchange="loadTaskList(0)" class="form-select" id="active" name="active">
+                                        <option selected="" value="all">All</option>
+                                        <option value="active">Active</option>
+                                        <option value="closed">Closed</option>
+                                    </select></th>
+                                    <th>ProcessDefinition</th>
+                                </tr></thead>
+                                <tbody></tbody>
+                            </table>
+                            <div style="display: none;">
+                                <form th:action="'#'" autocomplete="off">
+                                    <input type="hidden" id="_csrf" th:value="${_csrf.token}" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script>
+                $(document).ready(function() {
+                    loadTaskList(0);
+                });
+
+                function loadTaskTable(json) {
+                    $("#taskTableList tbody").html("");
+                    for (var i = 0; i < json.length; i++) {
+                        content = "<tr>";
+                        if (json[i].closed) {
+                            content += `<td>${json[i].id}</td>`;
+                        } else {
+                            content += `<td><a class="btn btn-primary btn-sm" href="/task/update/${json[i].id}">${json[i].id} <i class="fa fa-repeat"></i></a></td>`;
+                        }
+                        content += `<td>${json[i].dateCreated}</td>`;
+                        content += `<td>${json[i].status}</td>`;
+                        content += `<td>${json[i].closed}</td>`;
+                        content += `<td>${json[i].processKey}</td></tr>`;
+                        $("#taskTableList tbody").append(content);
+                    }
+                }
+                function loadTaskList(page) {
+                    let formData = new FormData();
+                    let all = $("#active").val() == 'all';
+                    if (all == true) {
+                        formData.append("all", $("#active").val() == 'all');
+                    } else {
+                        formData.append("closed", $("#active").val() == 'closed');
+                    }
+                    formData.append("count", $("#count").val());
+                    formData.append("num", page);
+                    formData.append('_csrf', $("#_csrf").val());
+                    $.ajax({
+                        url : "/task/list",
+                        type : "POST",
+                        data : formData,
+                        processData: false,
+                        contentType: false,
+                        success : function(answer) {
+                            loadTaskTable(answer.content);
+                            var paging = "";
+                            //if (answer.maxPage > 1) {
+                                if (answer.currentPage == 1) {
+                                    paging += '<li class="page-item active"><a class="page-link" onclick="loadTaskList(0); return false;" href="#">First page</a></li>';
+                                } else {
+                                    paging += '<li class="page-item"><a class="page-link" onclick="loadTaskList(0); return false;" href="#">First page</a></li>';
+                                }
+                                $.each(answer.pages, function (i, item) {
+                                    var active = "";
+                                    if (item == page) active = " active";
+                                    paging += `<li class="page-item${active}"><a class="page-link" onclick="loadTaskList(${item}); return false;" href="#">${item}</a></li>`;
+                                });
+                                if (answer.maxPage == page) {
+                                    paging += `<li class="page-item active"><a class="page-link" onclick="loadTaskList(${answer.maxPage}); return false;" href="#">Last page</a></li>`;
+                                } else {
+                                    paging += `<li class="page-item"><a class="page-link" onclick="loadTaskList(${answer.maxPage}); return false;" href="#">Last page</a></li>`;
+                                }
+                            //}
+                            $("#groupListPagination").html(paging);
+                        }
+                    });
+                }
+            </script>
+        </section>
+    </body>
+</html>

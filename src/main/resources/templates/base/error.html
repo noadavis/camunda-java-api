@@ -1,0 +1,16 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <p style="font-size: 120%; text-align: center;"><i class="fa fa-exclamation-circle"></i> <span th:text="${error}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>

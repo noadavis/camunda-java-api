@@ -1,0 +1,68 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <p>
+                            <a class="btn btn-primary" href="/bpmn/process/new"><i class="fa fa-file-code-o"></i> Upload new process</a>
+                            <a class="btn btn-primary" onclick="checkProcess(); return false;" href="#"><i class="fa fa-refresh"></i> Check loaded processes</a>
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead><tr>
+                                    <th>#</th>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Key</th>
+                                    <th>Id</th>
+                                    <th>Version</th>
+                                    <th>DeploymentId</th>
+                                    <th>DeploymentDate</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr th:each="bpmn: ${processList}" th:id="${'tr_' + bpmn.getId()}">
+                                        <td th:text="${bpmn.getId()}"></td>
+                                        <td><span th:if="${bpmn.getProcessKey() == processDefault}" title="Default process"><i class="fa fa-star"></i></span></td>
+                                        <td><a th:text="${bpmn.getName()}" th:href="'/bpmn/process/' + ${bpmn.getId()}"></a></td>
+                                        <td th:text="${bpmn.getProcessKey()}"></td>
+                                        <td th:text="${bpmn.getProcessId()}"></td>
+                                        <td th:text="${bpmn.getVersion()}"></td>
+                                        <td th:text="${bpmn.getDeploymentId()}"></td>
+                                        <td th:text="${bpmn.getDeploymentTime()}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script>
+                // $(document).ready(function() {
+                //     //
+                // });
+                function checkProcess() {
+                    $.ajax({
+                        url : "/bpmn/process-check",
+                        type : "GET",
+                        processData: false,
+                        contentType: false,
+                        success : function(answer) {
+                            if (!answer.error) {
+                                window.location.reload();
+                            } else {
+                                if (answer.description != "") swal.fire(answer.description);
+                            }
+                        }
+                    });
+                    return false;
+                }
+            </script>
+        </section>
+    </body>
+</html>

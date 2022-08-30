@@ -1,0 +1,6 @@
+/target/
+/.idea/
+/src/main/resources/application.yml
+/src/main/resources/templates/old/
+/src/main/java/org/example/camunda/helpers/old/
+/src/main/java/org/example/camunda/task/old/
