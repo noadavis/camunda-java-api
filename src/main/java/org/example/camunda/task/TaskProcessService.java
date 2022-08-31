@@ -46,17 +46,44 @@ public class TaskProcessService {
 
     public CamundaFormInfo getFormData(String processInstanceId) {
         ProcessEngine engine = engineProvider.getDefaultProcessEngine();
-        List<Task> procInstList = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).list();
-        if (procInstList != null && procInstList.size() > 0) {
+        List<Task> taskList = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).list();
+        if (taskList != null && taskList.size() > 0) {
             return new CamundaFormInfo(
-                    procInstList.get(0).getName(),
-                    engine.getFormService().getTaskFormData(procInstList.get(0).getId())
+                    taskList.get(0).getName(),
+                    engine.getFormService().getTaskFormData(taskList.get(0).getId())
             );
         }
         return null;
     }
 
+    public CamundaFormInfo getFormInfo(int userTaskId) {
+        Optional<CustomTask> optionalTask = taskRepository.findById(userTaskId);
+        if (optionalTask.isPresent()) {
+            ProcessEngine engine = engineProvider.getDefaultProcessEngine();
+            List<Task> taskList = engine.getTaskService().createTaskQuery().processInstanceId(optionalTask.get().getProcessInstanceId()).list();
+            if (taskList != null && taskList.size() > 0) {
+                Task t = taskList.get(0);
+                CamundaFormInfo info = new CamundaFormInfo();
+                info.setStepName(t.getName());
+                info.setProcessInstance(t.getProcessInstanceId());
+                info.setProcessDefinition(t.getProcessDefinitionId());
+                info.setTaskId(t.getId());
+                info.setFormVariables(null);
+                return info;
+            }
+        }
+        return null;
+    }
 
+    public List<TaskFormVariable> getAllVariables(String processInstanceId) {
+        List<TaskFormVariable> variables = new ArrayList<>();
+        ProcessEngine engine = engineProvider.getDefaultProcessEngine();
+        Map<String, Object> processVariables = engine.getRuntimeService().getVariables(processInstanceId);
+        for (Map.Entry<String, Object> entry : processVariables.entrySet()) {
+            variables.add(new TaskFormVariable(entry.getKey(), entry.getValue().toString()));
+        }
+        return variables;
+    }
 
     public String startUserProcess(User user, String processKey, Map<String, Object> json) {
         ProcessEngine engine = engineProvider.getDefaultProcessEngine();
@@ -99,23 +126,24 @@ public class TaskProcessService {
         if (optionalTask.isPresent()) {
             CustomTask t = optionalTask.get();
             ProcessEngine engine = engineProvider.getDefaultProcessEngine();
-            List<Task> procInstList = engine.getTaskService().createTaskQuery().processInstanceId(t.getProcessInstanceId()).list();
-            if (procInstList != null && procInstList.size() > 0) {
-                Task task = procInstList.get(0);
+            List<Task> taskList = engine.getTaskService().createTaskQuery().processInstanceId(t.getProcessInstanceId()).list();
+            if (taskList != null && taskList.size() > 0) {
+                Task task = taskList.get(0);
                 TaskFormData taskFormData = engine.getFormService().getTaskFormData(task.getId());
-                Map<String, Object> variables = getProcessVariables(taskFormData.getFormFields(), json);
-
                 TaskHistory h = new TaskHistory();
                 h.setUser(user.getId());
                 h.setUsername(user.getUsername());
                 h.setCustomTask(t);
                 h.setDateCreated(new Date());
                 h.setMessage("task updated");
-
                 t.addHistory(h);
                 taskRepository.save(t);
-
-                engine.getTaskService().complete(task.getId(), variables);
+                if (json != null) {
+                    Map<String, Object> variables = getProcessVariables(taskFormData.getFormFields(), json);
+                    engine.getTaskService().complete(task.getId(), variables);
+                } else {
+                    engine.getTaskService().complete(task.getId());
+                }
             } else return "process instance task not found";
         } else return "user task not found";
         return null;

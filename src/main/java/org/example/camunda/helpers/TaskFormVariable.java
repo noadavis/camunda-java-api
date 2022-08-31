@@ -13,6 +13,11 @@ public class TaskFormVariable {
     public TaskFormVariable() {
     }
 
+    public TaskFormVariable(String id, String value) {
+        this.id = id;
+        this.value = value;
+    }
+
     public TaskFormVariable(String id, String label, String type, String value, boolean writable) {
         this.id = id;
         this.label = label;

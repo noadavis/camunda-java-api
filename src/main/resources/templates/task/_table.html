@@ -66,11 +66,16 @@
                         if (json[i].closed) {
                             content += `<td>${json[i].id}</td>`;
                         } else {
-                            content += `<td><a class="btn btn-primary btn-sm" href="/task/update/${json[i].id}">${json[i].id} <i class="fa fa-repeat"></i></a></td>`;
+                            content += `<td><a class="btn btn-primary btn-sm" href="/task/update/${json[i].id}">${json[i].id} <i class="fa fa-repeat"></i></a>`;
+                            content += `&nbsp;<a class="btn btn-info btn-sm" onclick="showProcessData(${json[i].id}); return false;"><i class="fa fa-info-circle"></i></a></td>`;
                         }
                         content += `<td>${json[i].dateCreated}</td>`;
                         content += `<td>${json[i].status}</td>`;
-                        content += `<td>${json[i].closed}</td>`;
+                        if (json[i].closed) {
+                            content += `<td>closed</td>`;
+                        } else {
+                            content += `<td>active</td>`;
+                        }
                         content += `<td>${json[i].processKey}</td></tr>`;
                         $("#taskTableList tbody").append(content);
                     }
@@ -115,6 +120,37 @@
                             $("#groupListPagination").html(paging);
                         }
                     });
+                }
+
+                function showStatusModalInfo(obj) {
+                    var value = `<table class="table table-bordered" style="font-size: 90%;" width="100%">
+                        <tr><td width="50%">processInstance</td><td>${obj.processInstance}</td></tr>
+                        <tr><td>taskId</td><td><a target="_blank" href="/bpmn/task/${obj.taskId}">${obj.taskId}</a></td></tr>
+                        <tr><td>processDefinition</td><td>${obj.processDefinition}</td></tr>
+                        <tr><td>stepName</td><td>${obj.stepName}</td></tr></table>`;
+                    swal.fire({
+                        html: value,
+                        title: "Process info",
+                        confirmButtonText: "Close"
+                    });
+                }
+                function showProcessData(id) {
+                    var formData = new FormData();
+                    formData.append("taskId", id);
+                    formData.append('_csrf', $("#_csrf").val());
+                    $.ajax({
+                        url : "/task/get_process_info",
+                        type : "POST",
+                        data : formData,
+                        processData: false,
+                        contentType: false,
+                        success : function(answer) {
+                            if (answer.error == false) {
+                                showStatusModalInfo(answer.info);
+                            }
+                        }
+                    });
+                    return false;
                 }
             </script>
         </section>

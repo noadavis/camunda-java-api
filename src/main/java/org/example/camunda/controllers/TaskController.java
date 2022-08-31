@@ -63,6 +63,7 @@ public class TaskController {
             @RequestParam(value = "num", defaultValue = "") String num,
             @RequestParam(value = "count", defaultValue = "") String count) {
         int pageNum = Utils.checkInt(num);
+        if (pageNum > 0) pageNum = pageNum - 1;
         int pageSize = Utils.checkInt(count);
         Page<CustomTask> answer = taskRepository.getCustomTaskList(
                 all.equals("true") ? null : closed.equals("true"),
@@ -90,6 +91,21 @@ public class TaskController {
         return "{ \"error\": true }";
     }
 
+    @PostMapping(value = "/get_process_info", produces = "application/json")
+    @ResponseBody
+    public String getProcessInfo(@RequestParam(value = "taskId", defaultValue = "") String task) {
+        int taskId = Utils.checkInt(task);
+        if (taskId > 0) {
+            CamundaFormInfo info = taskProcessService.getFormInfo(taskId);
+            if (info != null) {
+                return String.format("{ \"error\": false, \"info\": %s }", new Gson().toJson(info));
+            }
+        }
+        return "{ \"error\": true }";
+    }
+
+
+
     @PostMapping(value = "/new")
     public String newRequest(Authentication authentication, Model model,
                              @RequestParam(value = "processKey", defaultValue = "") String process) {
@@ -116,10 +132,19 @@ public class TaskController {
             if (optionalTask.isPresent()) {
                 CustomTask t = optionalTask.get();
                 CamundaFormInfo formInfo = taskProcessService.getFormData(t.getProcessInstanceId());
-                formVariables = taskProcessService.getFormVariables(formInfo.getFormVariables().getFormFields());
-                formKey = formInfo.getFormVariables().getFormKey();
-                stepName = formInfo.getStepName();
-                processKey = t.getProcessKey().split(":")[0];
+                if (formInfo != null) {
+                    formKey = formInfo.getFormVariables().getFormKey();
+                    stepName = formInfo.getStepName();
+                    processKey = t.getProcessKey().split(":")[0];
+                    if ("report".equals(formKey)) {
+                        formVariables = taskProcessService.getAllVariables(t.getProcessInstanceId());
+                        model.addAttribute("history", t.getHistory());
+                    } else {
+                        formVariables = taskProcessService.getFormVariables(formInfo.getFormVariables().getFormFields());
+                    }
+                } else {
+                    //todo show form error [ not active camunda tasks found ]
+                }
             }
         }
         AppData appData = context.getBean(AppData.class, authentication, String.format("Update user task [ %s ]", stepName), "tasks", "");

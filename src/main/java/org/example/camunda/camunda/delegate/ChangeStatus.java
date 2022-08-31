@@ -42,6 +42,9 @@ public class ChangeStatus implements JavaDelegate {
                     h.setDateCreated(new Date());
                     h.setMessage("status updated: " + taskStatus.name());
                     t.addHistory(h);
+                    if (taskStatus.equals(TaskStatus.CLOSE)) {
+                        t.setClosed(true);
+                    }
                     taskRepository.save(t);
                 } else log.error(String.format("ChangeStatus delegate: new TaskStatus not found, taskId: %d", taskId));
             } else log.error(String.format("ChangeStatus delegate: CustomTask not found, taskId: %d", taskId));

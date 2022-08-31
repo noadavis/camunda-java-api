@@ -87,7 +87,13 @@
                     var answer = await ajaxJsonWrapper("/task/process", formData, $("#_csrf").val());
                     if (answer) {
                         if (!answer.error) {
-                            swal.fire("New user task created");
+                           swal.fire({
+                                title: "User task updated",
+                                confirmButtonText: 'Ok',
+                            }).then((result) => {
+                                window.location.replace("/task");
+                            });
+                            //swal.fire("User task updated");
                         } else {
                             if (answer.description != "") swal.fire(answer.description);
                         }

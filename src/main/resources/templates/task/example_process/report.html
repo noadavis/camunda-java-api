@@ -1,0 +1,73 @@
+<html layout:decorate="~{base/main}" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head></head>
+    <body>
+        <section class="row" layout:fragment="mainContent">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body" id="taskFormPage">
+                        <form autocomplete="off" class="form form-horizontal">
+                            <div class="row">
+
+
+
+                                <div th:each="field: ${fields}" th:remove="tag">
+                                    <div class="col-md-4"><label th:text="${field.getId()}"></label></div>
+                                    <div class="col-md-8 form-group">
+                                        <span th:text="${field.getValue()}"></span>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div th:each="h: ${history}" th:remove="tag">
+                                    <p>
+                                        <span th:text="${h.getDateCreated()}"></span>,
+                                        <span th:text="${h.getUsername()}"></span>,
+                                        <span th:text="${h.getMessage()}"></span>
+                                    </p>
+                                </div>
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <hr>
+                                    <div id="taskFormButtons">
+                                        <input type="hidden" id="_csrf" th:value="${_csrf.token}" />
+                                        <input type="hidden" id="_taskId" class="taskField" th:value="${taskId}" />
+                                        <a onclick="submitForm(); return false;" href="#" class="btn btn-primary"><i class="fa fa-floppy-o"></i> Close user task</a>
+                                        <a href="/task" class="btn btn-primary"><i class="fa fa-ban"></i> Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section layout:fragment="javaScript" th:remove="tag">
+            <script type="text/javascript" src="/static/task/task.js"></script>
+            <script>
+                async function submitForm() {
+                    var answer = await ajaxJsonWrapper("/task/update", { "_taskId": $("#_taskId").val() }, $("#_csrf").val());
+                    if (answer) {
+                        if (!answer.error) {
+                            swal.fire({
+                                title: "User task updated",
+                                confirmButtonText: 'Ok',
+                            }).then((result) => {
+                                window.location.replace("/task");
+                            });
+                            //swal.fire("User task updated");
+                        } else {
+                            if (answer.description != "") swal.fire(answer.description);
+                        }
+                    }
+                    return false;
+                }
+            </script>
+        </section>
+    </body>
+</html>

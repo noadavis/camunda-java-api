@@ -87,7 +87,17 @@
                     var answer = await ajaxJsonWrapper("/task/update", formData, $("#_csrf").val());
                     if (answer) {
                         if (!answer.error) {
-                            swal.fire("User task updated");
+                            swal.fire({
+                                title: "User task updated, exit task?",
+                                text: 'When you choose not exit: page will be updated and the next step will be loaded',
+                                showDenyButton: true,
+                                confirmButtonText: 'Yes',
+                                denyButtonText: 'No',
+                            }).then((result) => {
+                                if (result.isDenied) document.location.reload(true);
+                                else window.location.replace("/task");
+                            });
+                            //swal.fire("User task updated");
                         } else {
                             if (answer.description != "") swal.fire(answer.description);
                         }
